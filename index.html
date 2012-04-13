@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stacks</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen">
+    <script type="text/javascript" src="http://cdn.hydna.com/1/hydna.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+  </head>
+  <body class="intro">
+    <canvas>
+    </canvas>
+    <ul id="legend">
+      <li class="new"><span>New Visitor</span></li>
+      <li class="pageview"><span>Page view</span></li>
+      <li class="idle"><span>Idle user</span></li>
+    </ul>
+    <div id="shader"></div>
+    <div id="intro">
+      <h1>Welcome to Stacks!</h1>
+      <p>
+        This demo let you track visitors in real-time. This instance is currently showing all visitors on [YOUR DOMAIN]
+      </p>
+      <button id="start">Ok, let me see</button>
+    </div>
+    <script>
+      var button = document.getElementById("start");
+      button.attachEvent ? button.attachEvent("click", stacks.start)
+                         : button.addEventListener("click", stacks.start, false);
+    </script>
+  </body>
+</html>
