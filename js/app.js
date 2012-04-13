@@ -207,7 +207,7 @@
     if (!this.usedSlots) {
       this.timeout = setTimeout(function () {
         self.destroy();
-      });
+      }, REF_TIMEOUT);
     }
   };
 
