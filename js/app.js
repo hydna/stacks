@@ -94,15 +94,49 @@
   Container.prototype.setHeight = function (height) {
     var totalSlots;
     var slots;
+    var bar;
 
     this.height = height;
     this.barAreaHeight = height / 2;
 
     totalSlots = parseInt(this.barAreaHeight / Bar.HEIGHT);
-    slots = new Array(totalSlots);
 
+    // No need too do anything if we have the same number of slots. Just
+    // re-set the index so that we get the correct target Y.
+    if (this.slots.length == totalSlots) {
+
+      for (var i = 0, l = totalSlots; i < l; i++) {
+        this.slots[i] && this.slots[i].setIndex(i, l);
+      }
+      return;
+    }
+
+    // Just create a new collection if no slots is currently used.
+    if (!this.usedSlots) {
+      this.slots = new Array(totalSlots);
+      return;
+    }
+
+    slots = this.slots;
+
+    // Take the end-part of the old slots collection and destroy
+    // all bars that didnt make it.
+    if (slots.length > totalSlots) {
+      while (slots.length < totalSlots) {
+        if ((bar = slots.shift())) {
+          bar.destroy();
+        }
+      }
+    } else {
+      while (slots.length < totalSlots) {
+        slots.unshift(void(0));
+      }
+    }
+
+    // Re-set the index of each bar, this will give them
+    // the correct y position.
     for (var i = 0, l = slots.length; i < l; i++) {
-      slots[i] = this.slots[i];
+      slots[i] && slots[i].setIndex(i, l);
     }
 
     this.slots = slots;
@@ -187,7 +221,7 @@
     while (index--) {
       if (slots[index] == void(0)) {
         self.slots[index] = bar;
-        bar.setIndex(index);
+        bar.setIndex(index, slots.length);
         bar.onremove = function () {
           self._removeBar(this);
           this.onremove = null;
@@ -202,7 +236,7 @@
   Container.prototype._removeBar = function (bar) {
     var self = this;
     this.slots[bar.index] = void(0);
-    this.resortSlotsFrom(bar.index);
+    this._resortSlotsFrom(bar.index);
     this.usedSlots--;
     if (!this.usedSlots) {
       this.timeout = setTimeout(function () {
@@ -212,14 +246,14 @@
   };
 
 
-  Container.prototype.resortSlotsFrom = function (index) {
+  Container.prototype._resortSlotsFrom = function (index) {
     var slots = this.slots;
     var bar;
 
     while ((bar = slots[--index])) {
       slots[index] = void(0);
       slots[index + 1] = bar;
-      bar.setIndex(index + 1);
+      bar.setIndex(index + 1, slots.length);
     }
   };
 
@@ -262,9 +296,18 @@
   Bar.prototype.onremove = function () {};
 
 
-  Bar.prototype.setIndex = function (index) {
+  Bar.prototype.setIndex = function (index, total) {
+    var negindex = total - index;
+    var barAreaHeight = parseInt(maxHeight / 2);
+    var newy = barAreaHeight - (negindex * Bar.HEIGHT);
+
+    if (this.y >= barAreaHeight || this.targetY >= barAreaHeight) {
+      this.y = this.targetY = newy;
+    } else {
+      this.targetY = newy;
+    }
+
     this.index = index;
-    this.targetY = index * Bar.HEIGHT;
   };
 
 
