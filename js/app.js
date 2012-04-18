@@ -1,6 +1,5 @@
 (function (exports) {
 
-  var HYDNA_URL = "stacks.hydna.net/9999";
   var INACTIVITY_TIMEOUT  = 30 * 1000; // 30 sec
   var DESTROY_TIMEOUT  = 60 * 1000; // 60 sec
   var REF_TIMEOUT = 20 * 1000; // 20 sec
@@ -8,6 +7,13 @@
   var maxWidth = 0;
   var maxHeight = 0;
   var button;
+  var hydnaurl;
+
+  if (typeof HYDNA_URL == "undefined") {
+    hydnaurl = "stacks.hydna.net/9999"
+  } else {
+    hydnaurl = HYDNA_URL
+  }
 
   exports.start = start;
 
@@ -348,7 +354,7 @@
     body.className = "";
     onresize();
 
-    chan = new HydnaChannel(HYDNA_URL, 'r');
+    chan = new HydnaChannel(hydnaurl, 'r');
 
     chan.onopen = function(e) {
       running = true;
